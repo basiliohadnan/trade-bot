@@ -46,6 +46,9 @@ def job():
     previous_price = current_price
 
 def main(interval_minutes):
+    # Run job once immediately
+    job()
+    
     # Schedule price fetching task at specified interval
     schedule.every(interval_minutes).minutes.do(job)
 
