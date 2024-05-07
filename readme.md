@@ -1,32 +1,34 @@
 # Crypto Price Tracker
 
-This Python script fetches the current price of Bitcoin (BTC) from the CoinGecko API and displays it on the console. It serves as a starting point for building a cryptocurrency price tracking application.
+This Python script fetches the current price of Bitcoin (BTC) from the CoinGecko API and displays it on the console. It also calculates the percentage change in price compared to the first run, the previous run, and the start of the day.
 
 ## Features
 
 - Fetches the current price of Bitcoin (BTC) from the CoinGecko API.
-- Displays the price on the console.
+- Calculates and displays the percentage change in price compared to the first run, the previous run, and the start of the day.
+- Logs the fetched prices along with the percentage changes.
 
 ## Prerequisites
 
 - Python 3.6 or higher installed on your system.
 - A CoinGecko API key. Sign up for a free account at [CoinGecko](https://www.coingecko.com/en/api) to get an API key.
+- Install the required dependencies by running `pip install -r requirements.txt`.
 
 ## Installation
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your_username/crypto-price-tracker.git
+   git clone https://github.com/basiliohadnan/trade-bot.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd crypto-price-tracker
+   cd trade-bot
    ```
 
-3. Install dependencies using pip:
+3. Install the required dependencies:
 
    ```bash
    pip install -r requirements.txt
@@ -40,13 +42,15 @@ This Python script fetches the current price of Bitcoin (BTC) from the CoinGecko
 
 ## Usage
 
-Run the script using Python:
+1. Run the script using Python:
 
-```bash
-python bitcoin_price.py
-```
+   ```bash
+   python bitcoin_price.py
+   ```
 
-The script will fetch the current price of Bitcoin from the CoinGecko API and display it on the console.
+2. Enter the interval in minutes when prompted. This interval determines how often the script fetches the Bitcoin price and calculates the percentage changes.
+
+3. The script will display the current Bitcoin price and the percentage changes since the first run, the previous run, and the start of the day.
 
 ## Contributing
 
