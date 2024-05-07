@@ -83,9 +83,11 @@ def job():
     
     if current_price < lowest_price_of_day:
         lowest_price_of_day = current_price
+        logging.info(f"New lowest price of the day: ${lowest_price_of_day}")
     
     if current_price > highest_price_of_day:
         highest_price_of_day = current_price
+        logging.info(f"New highest price of the day: ${highest_price_of_day}")
 
     if day_start_price is not None:
         percentage_change_since_day_start = calculate_percentage_change(current_price, day_start_price)
