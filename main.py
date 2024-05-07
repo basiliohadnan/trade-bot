@@ -3,6 +3,7 @@ import requests
 from dotenv import load_dotenv
 import schedule
 import time
+from datetime import datetime
 
 # Load environment variables from .env file
 load_dotenv()
@@ -21,7 +22,7 @@ def fetch_price():
         current_price = data['bitcoin']['usd']
         return current_price
     except Exception as e:
-        print("Error fetching BTC price:", e)
+        print(f"{datetime.utcnow()} - Error fetching BTC price: {e}")
         return None
 
 def calculate_percentage_change(current_price):
@@ -36,12 +37,12 @@ def job():
     global previous_price
     current_price = fetch_price()
     if current_price is not None:
-        print(f"Current Bitcoin price: ${current_price}")
+        print(f"{datetime.utcnow()} - Current Bitcoin price: ${current_price}")
         percentage_change = calculate_percentage_change(current_price)
         if percentage_change is not None:
-            print(f"Percentage Change: {percentage_change:.2f}%")
+            print(f"{datetime.utcnow()} - Percentage Change: {percentage_change:.2f}%")
     else:
-        print("Failed to fetch Bitcoin price.")
+        print(f"{datetime.utcnow()} - Failed to fetch Bitcoin price.")
     previous_price = current_price
 
 def main(interval_minutes):
