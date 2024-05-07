@@ -8,6 +8,7 @@ from datetime import datetime
 # Load environment variables from .env file
 load_dotenv()
 
+initial_price = None
 previous_price = None
 
 def fetch_price():
@@ -26,21 +27,23 @@ def fetch_price():
         return None
 
 def calculate_percentage_change(current_price):
-    global previous_price
-    if previous_price is None:
+    global initial_price
+    if initial_price is None:
         return None
     else:
-        percentage_change = ((current_price - previous_price) / previous_price) * 100
+        percentage_change = ((current_price - initial_price) / initial_price) * 100
         return percentage_change
 
 def job():
-    global previous_price
+    global initial_price, previous_price
     current_price = fetch_price()
+    if initial_price is None:
+        initial_price = current_price
     if current_price is not None:
         print(f"{datetime.utcnow()} - Current Bitcoin price: ${current_price}")
         percentage_change = calculate_percentage_change(current_price)
         if percentage_change is not None:
-            print(f"{datetime.utcnow()} - Percentage Change: {percentage_change:.2f}%")
+            print(f"{datetime.utcnow()} - Percentage Change since first run: {percentage_change:.2f}%")
     else:
         print(f"{datetime.utcnow()} - Failed to fetch Bitcoin price.")
     previous_price = current_price
