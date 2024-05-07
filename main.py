@@ -11,6 +11,8 @@ load_dotenv()
 initial_price = None
 previous_price = None
 day_start_price = None
+lowest_price_of_day = None
+highest_price_of_day = None
 
 def fetch_price():
     url = f"https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
@@ -62,7 +64,7 @@ def get_day_start_price():
         return None
 
 def job():
-    global initial_price, previous_price, day_start_price
+    global initial_price, previous_price, day_start_price, lowest_price_of_day, highest_price_of_day
     current_price = fetch_price()
     
     if initial_price is None:
@@ -70,6 +72,12 @@ def job():
     
     if day_start_price is None:
         day_start_price = get_day_start_price()
+    
+    if lowest_price_of_day is None or current_price < lowest_price_of_day:
+        lowest_price_of_day = current_price
+    
+    if highest_price_of_day is None or current_price > highest_price_of_day:
+        highest_price_of_day = current_price
     
     if current_price is not None:
         print(f"{datetime.utcnow()} - Current Bitcoin price: ${current_price}")
@@ -81,16 +89,27 @@ def job():
         percentage_change_since_day_start = calculate_percentage_change(current_price, day_start_price)
         if percentage_change_since_day_start is not None:
             print(f"{datetime.utcnow()} - Percentage Change since day start: {percentage_change_since_day_start:.2f}%")
-    else:
-        print(f"{datetime.utcnow()} - Failed to fetch Bitcoin price.")
+    
+    # Calculate percentage difference from lowest and highest price of the day
+    if lowest_price_of_day is not None:
+        percentage_diff_from_lowest = calculate_percentage_change(current_price, lowest_price_of_day)
+        print(f"{datetime.utcnow()} - Percentage Difference from Lowest Price of the Day: {percentage_diff_from_lowest:.2f}%")
+    
+    if highest_price_of_day is not None:
+        percentage_diff_from_highest = calculate_percentage_change(current_price, highest_price_of_day)
+        print(f"{datetime.utcnow()} - Percentage Difference from Highest Price of the Day: {percentage_diff_from_highest:.2f}%")
     
     previous_price = current_price
 
 def main(interval_minutes):
-    global day_start_price
+    global day_start_price, lowest_price_of_day, highest_price_of_day
     # Log the start day price when main is called
     day_start_price = get_day_start_price()
     print(f"{datetime.utcnow()} - Start of day Bitcoin price: ${day_start_price}")
+    
+    # Reset lowest and highest prices at the start of each day
+    lowest_price_of_day = day_start_price
+    highest_price_of_day = day_start_price
     
     # Run job once immediately
     job()
