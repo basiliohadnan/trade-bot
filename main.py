@@ -5,7 +5,8 @@ import time
 from datetime import datetime, timedelta
 import logging
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
 
 # Constants
 BITCOIN_API_URL = "https://api.coingecko.com/api/v3"
