@@ -11,13 +11,11 @@ lowest_price_of_day = None
 highest_price_of_day = None
 
 def monitor_price_changes():
-    """Monitors price changes and sends notifications."""
+    """Monitors price changes and sends consolidated notifications."""
     current_price = fetch_price()
     if current_price is None:
         log_info("Failed to fetch current Bitcoin price.")
         return
-
-    log_info(f"Current Bitcoin price: ${current_price}")
 
     global initial_price, day_start_price, lowest_price_of_day, highest_price_of_day
     if initial_price is None:
@@ -28,22 +26,24 @@ def monitor_price_changes():
         if price_data is not None:
             lowest_price_of_day, highest_price_of_day = price_data
             day_start_price = (lowest_price_of_day + highest_price_of_day) / 2
-            log_info(f"Start of day Bitcoin price: ${day_start_price}")
         else:
             log_info("Failed to fetch start of day BTC price.")
             return
 
     if current_price < lowest_price_of_day:
         lowest_price_of_day = current_price
-        log_info(f"New lowest price of the day: ${lowest_price_of_day}")
 
     if current_price > highest_price_of_day:
         highest_price_of_day = current_price
-        log_info(f"New highest price of the day: ${highest_price_of_day}")
 
     if day_start_price is not None:
         percentage_change_since_day_start = calculate_percentage_change(current_price, day_start_price)
-        log_info(f"Percentage Change since day start: {percentage_change_since_day_start:.2f}%")
+
+    # Prepare the consolidated message
+    message = f"Bitcoin Price Update:\nCurrent Price: R$ {current_price:.2f}\nStart of Day Price: R$ {day_start_price:.2f}\nLowest Price of the Day: R$ {lowest_price_of_day:.2f}\nHighest Price of the Day: R$ {highest_price_of_day:.2f}\nPercentage Change since day start: {percentage_change_since_day_start:.2f}%"
+    
+    # Send the message
+    send_telegram_message(message)
 
 def track_condition(buy_price, sell_threshold):
     """Tracks a specific condition and sends notification if met."""
