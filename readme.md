@@ -1,103 +1,62 @@
 # Trade Bot
 
-This is a Python-based trade bot for monitoring Bitcoin prices and notifying you via Telegram. The bot can operate in two modes: 
-1. Price Monitoring Mode: It sends regular updates about the Bitcoin price, including the current price, start of day price, lowest price of the day, highest price of the day, and percentage change since the start of the day.
-2. Price Tracking Mode: It notifies you when the Bitcoin price increases by a specified percentage from a given buy price.
-
-## Features
-
-- Fetches current Bitcoin prices from CoinGecko API.
-- Monitors and logs price changes.
-- Sends consolidated price updates via Telegram.
-- Tracks specific conditions and sends alerts when conditions are met.
-
-## Requirements
-
-- Python 3.x
-- `requests`
-- `pandas`
-- `schedule`
+Trade Bot is a Python script designed to provide real-time monitoring and trading signals for Bitcoin based on various technical indicators.
 
 ## Installation
 
 1. Clone the repository:
 
-```sh
-git clone https://github.com/basiliohadnan/trade-bot.git
-cd trade-bot
-```
+   ```bash
+   git clone https://github.com/basiliohadnan/trade-bot.git
+   ```
 
-2. Install the required Python packages:
+2. Navigate to the project directory:
 
-```sh
-pip install -r requirements.txt
-```
+   ```bash
+   cd trade-bot
+   ```
 
-3. Create a `constants.py` file and add your Telegram bot token and chat ID:
+3. Install the required dependencies:
 
-```python
-# constants.py
-
-TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN"
-TELEGRAM_CHAT_ID = "YOUR_TELEGRAM_CHAT_ID"
-INTERVAL_MINUTES = 5  # Interval in minutes for checking the price
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 ## Usage
 
-Run the main script and follow the prompts to select the mode and enter necessary details:
+1. Run the `main.py` script:
 
-```sh
-python main.py
-```
+   ```bash
+   python main.py
+   ```
 
-### Example Usage
+2. Choose the mode of operation:
+   - Enter `1` for Price Monitoring Mode: Monitors price changes and sends notifications based on predefined buying and selling signals.
+   - Enter `2` for Price Tracking Mode: Tracks a specific condition provided by the user and sends a notification if met.
 
-- **Price Monitoring Mode**: Select `1` to receive regular updates about Bitcoin prices.
-- **Price Tracking Mode**: Select `2`, enter the buy price, and the percentage increase threshold to receive a notification when the condition is met.
+3. Follow the prompts to input the required parameters such as buy price and sell threshold.
 
-## Code Overview
+4. The script will continuously run and provide real-time updates and trading signals via Telegram messages.
 
-### Main Script (`main.py`)
+## Features
 
-The main script initializes global variables, defines job functions for monitoring price changes and tracking specific conditions, and runs the selected job at regular intervals.
+- Real-time monitoring of Bitcoin price changes.
+- Price tracking mode with customizable conditions.
+- Utilizes technical indicators such as Moving Averages (MA), Relative Strength Index (RSI), and Moving Average Convergence Divergence (MACD) for signal generation.
+- Provides consolidated messages with price updates, trading signals, and percentage change since the start of the day.
+- Telegram integration for receiving notifications.
 
-### Bitcoin Price Fetching (`bitcoin.py`)
+## Requirements
 
-Contains functions to fetch the current Bitcoin price, calculate percentage changes, and get start of day prices from the CoinGecko API.
-
-### Telegram Notifications (`telegram.py`)
-
-Contains functions to send Telegram messages and log information.
-
-### Constants (`constants.py`)
-
-Stores the Telegram bot token, chat ID, and interval minutes.
+- Python 3.x
+- pandas
+- schedule
+- python-telegram-bot
 
 ## Contributing
 
-Feel free to fork this repository and contribute by submitting a pull request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Please feel free to submit issues and pull requests.
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [CoinGecko API](https://www.coingecko.com/en/api) for providing the Bitcoin price data.
-- [Python Telegram Bot](https://python-telegram-bot.readthedocs.io/) for making Telegram integration easy.
-
-```
-
-### Instructions
-
-1. Replace `"YOUR_TELEGRAM_BOT_TOKEN"` and `"YOUR_TELEGRAM_CHAT_ID"` in the `constants.py` file with your actual Telegram bot token and chat ID.
-2. Run the bot using `python main.py` and follow the prompts to select the mode and input any required values.
-
-### Running the Bot
-
-```sh
-python main.py
-```
-
-Choose `1` for Price Monitoring Mode or `2` for Price Tracking Mode, and the bot will start sending you the relevant updates via Telegram.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
