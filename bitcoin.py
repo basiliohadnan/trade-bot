@@ -1,49 +1,56 @@
 import requests
-from constants import BITCOIN_API_URL, BITCOIN_ID, VS_CURRENCY, DAYS_HISTORY
-
+import pandas as pd
 
 def fetch_price():
-    """Fetches the current Bitcoin price."""
+    """Fetches the current price of Bitcoin in BRL."""
     try:
-        url = f"{BITCOIN_API_URL}/simple/price?ids={BITCOIN_ID}&vs_currencies={VS_CURRENCY}"
-        response = requests.get(url)
-        response.raise_for_status()
+        response = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl')
         data = response.json()
-        return data[BITCOIN_ID][VS_CURRENCY]
-    except requests.RequestException as e:
-        print(f"Failed to fetch Bitcoin price: {e}")
+        return data['bitcoin']['brl']
+    except Exception as e:
+        print(f"Error fetching price: {e}")
         return None
-
 
 def calculate_percentage_change(current_price, reference_price):
-    """Calculates the percentage change between two prices."""
-    if reference_price is None:
-        return None
-    return ((current_price - reference_price) / reference_price) * 100
-
+    """Calculates the percentage change between current price and reference price."""
+    try:
+        return ((current_price - reference_price) / reference_price) * 100
+    except ZeroDivisionError:
+        return float('inf')
 
 def get_day_start_price():
-    """Fetches the start of day Bitcoin price."""
+    """Fetches the starting price of Bitcoin for the day."""
     try:
-        url = f"{BITCOIN_API_URL}/coins/{BITCOIN_ID}/market_chart?vs_currency={VS_CURRENCY}&days={DAYS_HISTORY}"
-        response = requests.get(url)
-        response.raise_for_status()
+        response = requests.get('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=brl&days=1')
         data = response.json()
+        prices = data['prices']
+        prices_df = pd.DataFrame(prices, columns=['timestamp', 'price'])
+        prices_df['timestamp'] = pd.to_datetime(prices_df['timestamp'], unit='ms')
+        start_of_day_price = prices_df['price'].iloc[0]
+        lowest_price_of_day = prices_df['price'].min()
+        highest_price_of_day = prices_df['price'].max()
+        return lowest_price_of_day, highest_price_of_day
+    except Exception as e:
+        print(f"Error fetching day start price: {e}")
+        return None
 
-        # Initialize lowest and highest prices with the first price point
-        lowest_price = data['prices'][0][1]
-        highest_price = data['prices'][0][1]
+def get_historical_data():
+    """Fetches historical price data for Bitcoin."""
+    try:
+        response = requests.get('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=brl&days=30')
+        data = response.json()
+        prices = data['prices']
+        prices_df = pd.DataFrame(prices, columns=['timestamp', 'price'])
+        prices_df['timestamp'] = pd.to_datetime(prices_df['timestamp'], unit='ms')
+        return prices_df
+    except Exception as e:
+        print(f"Error fetching historical data: {e}")
+        return None
 
-        # Iterate over the price points to find the lowest and highest prices
-        for point in data['prices']:
-            price = point[1]
-            if price < lowest_price:
-                lowest_price = price
-            if price > highest_price:
-                highest_price = price
-
-        return lowest_price, highest_price
-
-    except requests.RequestException as e:
-        print(f"Failed to fetch start of day BTC price: {e}")
-        return None, None
+def calculate_indicators(df):
+    """Calculates technical indicators for given price data."""
+    df['MA20'] = df['price'].rolling(window=20).mean()
+    df['MA50'] = df['price'].rolling(window=50).mean()
+    df['EMA20'] = df['price'].ewm(span=20, adjust=False).mean()
+    df['EMA50'] = df['price'].ewm(span=50, adjust=False).mean()
+    return df
