@@ -7,4 +7,4 @@ VS_CURRENCY = "brl"
 DAYS_HISTORY = 1
 
 # Interval in minutes
-INTERVAL_MINUTES = int(os.getenv("INTERVAL_MINUTES", 5))
+INTERVAL_MINUTES = int(os.getenv("INTERVAL_MINUTES", 15))
