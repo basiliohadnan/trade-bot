@@ -3,23 +3,26 @@ import pandas as pd
 from datetime import datetime
 
 def fetch_price():
-    """Fetch the current Bitcoin price in BRL."""
+    """Fetch the current Bitcoin price in usd."""
     try:
-        response = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=brl')
+        response = requests.get('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd')
         response.raise_for_status()
-        return response.json()['bitcoin']['brl']
+        return response.json()['bitcoin']['usd']
     except requests.exceptions.RequestException as e:
         print(f"Failed to fetch current Bitcoin price: {e}")
         return None
 
-def get_historical_data(days=30):
+def get_historical_data(days=1):
     """Fetch historical Bitcoin price data for the last 'days' days."""
     try:
-        response = requests.get(f'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=brl&days={days}')
+        response = requests.get(f'https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days={days}')
         response.raise_for_status()
         data = response.json()
         prices = data['prices']
-        return pd.DataFrame(prices, columns=['timestamp', 'price']).set_index('timestamp')
+        df = pd.DataFrame(prices, columns=['timestamp', 'price'])
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')  # Convert timestamp to datetime
+        df.set_index('timestamp', inplace=True)
+        return df
     except requests.exceptions.RequestException as e:
         print(f"Failed to fetch historical Bitcoin data: {e}")
         return None
@@ -45,6 +48,20 @@ def get_day_start_price():
     if historical_data is not None:
         start_of_day = historical_data.iloc[0]['price']
         return start_of_day
+    return None
+
+def get_lowest_price_of_day(historical_data):
+    """Retrieve the lowest price of the day from historical data."""
+    if historical_data is not None:
+        lowest_price = historical_data['price'].min()
+        return lowest_price
+    return None
+
+def get_highest_price_of_day(historical_data):
+    """Retrieve the highest price of the day from historical data."""
+    if historical_data is not None:
+        highest_price = historical_data['price'].max()
+        return highest_price
     return None
 
 def calculate_percentage_change(current_price, reference_price):

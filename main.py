@@ -1,20 +1,20 @@
 import schedule
 import time
-from bitcoin import fetch_price, calculate_indicators, get_historical_data, get_day_start_price, calculate_percentage_change
+from bitcoin import fetch_price, calculate_indicators, get_historical_data, get_day_start_price, get_lowest_price_of_day, get_highest_price_of_day, calculate_percentage_change
 from telegram import send_telegram_message, log_info
 from constants import INTERVAL_MINUTES
-import pandas as pd
 
 # Initialize variables
 initial_price = None
 day_start_price = None
 lowest_price_of_day = None
 highest_price_of_day = None
+last_date = None
 
 def monitor_price_changes():
     """Monitors price changes and sends notifications."""
-    global initial_price, day_start_price, lowest_price_of_day, highest_price_of_day
-    historical_data = get_historical_data(30)
+    global initial_price, day_start_price, lowest_price_of_day, highest_price_of_day, last_date
+    historical_data = get_historical_data(1)  # Get data for the current day
     if historical_data is None:
         log_info("Failed to fetch historical Bitcoin data.")
         return
@@ -25,11 +25,13 @@ def monitor_price_changes():
         log_info("Failed to fetch current Bitcoin price.")
         return
 
-    if initial_price is None:
-        initial_price = current_price
-
-    if day_start_price is None:
+    # Check if the date has changed since the last update
+    current_date = historical_data.index[-1].date()
+    if current_date != last_date:
         day_start_price = get_day_start_price()
+        lowest_price_of_day = get_lowest_price_of_day(historical_data)
+        highest_price_of_day = get_highest_price_of_day(historical_data)
+        last_date = current_date
 
     if lowest_price_of_day is None or current_price < lowest_price_of_day:
         lowest_price_of_day = current_price
@@ -61,10 +63,10 @@ def monitor_price_changes():
     # Consolidated message
     message = (
         f"Bitcoin Price Update:\n"
-        f"Current Price: R${current_price:.2f}\n"
-        f"Start of Day Price: R${day_start_price:.2f}\n"
-        f"Lowest Price of the Day: R${lowest_price_of_day:.2f}\n"
-        f"Highest Price of the Day: R${highest_price_of_day:.2f}\n"
+        f"Current Price: ${current_price:.2f}\n"
+        f"Start of Day Price: ${day_start_price:.2f}\n"
+        f"Lowest Price of the Day: ${lowest_price_of_day:.2f}\n"
+        f"Highest Price of the Day: ${highest_price_of_day:.2f}\n"
         f"Percentage Change since day start: {percentage_change_since_day_start:.2f}%\n"
     )
 
